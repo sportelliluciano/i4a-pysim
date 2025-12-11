@@ -1,0 +1,58 @@
+services:
+  pysim:
+    build: https://github.com/sportelliluciano/pysim.git
+    volumes:
+      - ./config:/pysim:ro
+      - pysim:/tmp/pysim
+    environment:
+      PYSIM_CONFIG_FILE: /pysim/config.json
+      PYSIM_NETWORKS_DIR: /pysim/networks
+  
+  i4a_ui:
+    build: i4a-ui
+    environment:
+      PYSIM_URL: http://localhost:8080
+    volumes:
+      - pysim:/tmp/pysim
+    ports:
+      - 8000:8000
+    depends_on:
+      - pysim
+
+  node-root:
+    image: nodo:latest
+    build: nodo
+    volumes:
+      - ./nodo:/app:ro
+      - pysim:/tmp/pysim
+      - /Users/luciano/fiuba/i4a/tests/full_integration/build:/build   # Cambiar por el path adecuado
+    working_dir: /app/src
+    command: python -m nodo --root --qemu
+    stop_signal: SIGINT
+    cap_add:
+      - NET_ADMIN
+    depends_on:
+      - pysim
+
+  node-home:
+    image: nodo:latest
+    build: nodo
+    volumes:
+      - ./nodo:/app:ro
+      - pysim:/tmp/pysim
+      - /Users/luciano/fiuba/i4a/tests/full_integration/build:/build   # Cambiar por el path adecuado
+    working_dir: /app/src
+    network_mode: none
+    command: python -m nodo --qemu
+    stop_signal: SIGINT
+    cap_add:
+      - NET_ADMIN
+    deploy:
+      mode: replicated
+      replicas: 2 # Cambiar por la cantidad de replicas necesaria
+    depends_on:
+      - pysim
+
+
+volumes:
+  pysim:

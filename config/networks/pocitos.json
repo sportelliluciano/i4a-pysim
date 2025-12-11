@@ -1,0 +1,71 @@
+{
+  "root": {
+    "name": "Trejo Consolacion",
+    "position": [9.0, 4.5]
+  },
+  "1ca": {
+    "name": "Cañete",
+    "links": { "s": "root.n", "w": "2rg.n" },
+    "position": [12.5, 0.5]
+  },
+  "2rg": {
+    "name": "Ramona Galvan",
+    "links": { "e": "root.w" },
+    "position": [6.5, 3.0]
+  },
+  "3jo": {
+    "name": "Jorge",
+    "links": { "n": "root.s", "w": "5gr.e", "e": "4ja.w" },
+    "position": [8.0, 6.0]
+  },
+  "4ja": {
+    "name": "Javier",
+    "links": { "n": "root.e" },
+    "position": [10.0, 6.5]
+  },
+  "5gr": {
+    "name": "Grillo",
+    "links": { "n": "2rg.w" },
+    "position": [5.5, 3.5]
+  },
+  "6le": {
+    "name": "Lescano",
+    "links": { "n": "2rg.s", "e": "8an.w", "s": "Cma.w" },
+    "position": [6.5, 9.0]
+  },
+  "7hu": {
+    "name": "Hugo",
+    "links": { "e": "3jo.s", "n": "Acy.e", "w": "Bal.e" },
+    "position": [8.0, 7.5]
+  },
+  "8an": {
+    "name": "Anibal",
+    "links": { "n": "4ja.s" },
+    "position": [9.5, 8.5]
+  },
+  "9am": {
+    "name": "Angel Mendoza",
+    "links": { "e": "5gr.w", "s": "Acy.w" },
+    "position": [1.5, 3.0]
+  },
+  "Acy": {
+    "name": "Claudia Ybarra",
+    "links": { "n": "5gr.s", "s": "Bal.n" },
+    "position": [5.0, 5.0]
+  },
+  "Bal": {
+    "name": "Alcira",
+    "links": { "s": "6le.w" },
+    "position": [5.5, 9.0]
+  },
+  "Cma": {
+    "name": "Mauricio",
+    "links": { "n": "7hu.s", "e": "Dra.w" },
+    "position": [7.5, 9.5]
+  },
+  "Dra": {
+    "name": "Ramon",
+    "links": { "n": "8an.s" },
+    "position": [9.0, 9.5]
+  }
+}

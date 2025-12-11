@@ -1,0 +1,21 @@
+[project]
+name = "nodo"
+version = "0.1.0"
+description = ""
+authors = [
+    {name = "Lucho",email = "sportelliluciano@gmail.com"}
+]
+readme = "README.md"
+requires-python = ">=3.12,<4"
+dependencies = [
+    "scapy (>=2.6.1,<3.0.0)",
+    "structlog (>=25.5.0,<26.0.0)",
+    "pysim-sdk @ git+https://github.com/sportelliluciano/pysim-sdk.git"
+]
+
+[tool.poetry]
+packages = [{include = "nodo", from = "src"}]
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"

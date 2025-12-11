@@ -1,0 +1,23 @@
+{
+  "re": {
+    "links": {
+      "w": "root.e"
+    }
+  },
+  "rs": {
+    "links": {
+      "n": "root.s"
+    }
+  },
+  "res": {
+    "links": {
+      "n": "re.s",
+      "w": "rs.e"
+    }
+  },
+  "rese": {
+    "links": {
+      "w": "res.e"
+    }
+  }
+}

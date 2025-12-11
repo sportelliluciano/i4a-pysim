@@ -1,0 +1,20 @@
+[project]
+name = "i4a-ui"
+version = "0.1.0"
+description = ""
+authors = [
+    {name = "Lucho",email = "sportelliluciano@gmail.com"}
+]
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "fastapi (>=0.124.2,<0.125.0)",
+    "uvicorn (>=0.38.0,<0.39.0)"
+]
+
+[tool.poetry]
+packages = [{include = "i4a_ui", from = "src"}]
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"

@@ -1,0 +1,755 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Node</title>
+    <style>
+      body {
+        display: flex;
+        height: 95vh;
+        font-family: sans-serif;
+        background: #e2e0f7;
+      }
+
+      .container {
+        display: flex;
+        width: 100%;
+        height: 100%;
+        justify-content: center;
+        align-items: center;
+      }
+
+      .col,
+      .col2,
+      .col3,
+      .col4 {
+        height: 100%;
+        flex-direction: column;
+        display: flex;
+      }
+
+      .col {
+        flex-grow: 1;
+      }
+
+      .col2 {
+        width: 50%;
+      }
+
+      .col3 {
+        width: 75%;
+      }
+
+      .col4 {
+        width: 25%;
+      }
+
+      #network {
+        background: white;
+      }
+
+      .row {
+        flex-direction: row;
+        display: flex;
+        width: 100%;
+      }
+
+      .col-centered {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+
+      .device-section {
+        overflow: hidden;
+        flex-grow: 1;
+      }
+
+      #node-select {
+        font-size: 1em;
+        font-family: monospace;
+      }
+      #network {
+        height: 100%;
+        width: 100%;
+        padding: 16px;
+        box-sizing: border-box;
+        border: solid 1px #555;
+      }
+      .hspace-16 {
+        width: 16px;
+      }
+
+      .no-margin {
+        margin: 0;
+      }
+      #node-id {
+        background-color: #ddd;
+        padding: 2px;
+        min-width: 8em;
+        display: inline-block;
+        text-align: center;
+      }
+
+      .node-details h4 {
+        align-self: center;
+        flex-grow: 1;
+        text-align: right;
+        margin: 0 32px;
+      }
+
+      #info-panel ul,
+      #info-panel li {
+        padding: 0;
+        margin: 0;
+      }
+
+      #info-panel .panel-selector {
+        list-style: none;
+        display: flex;
+        flex-direction: row;
+        justify-content: space-around;
+        margin: 0;
+        padding: 0;
+        background: #e2e0f7;
+      }
+
+      #info-panel .panel-selector button {
+        width: 200px;
+        height: 2em;
+        font-size: 1.2rem;
+        border: none;
+        cursor: pointer;
+        margin: 8px;
+        background: #e2e0f7;
+      }
+
+      #info-panel .panel-selector .active button {
+        border-bottom: solid 3px;
+        font-weight: 700;
+      }
+
+      #info-panel .panel {
+        border: solid 1px #aaa;
+        overflow: auto scroll;
+        flex-grow: 1;
+        margin: 0;
+      }
+
+      #info-panel .panel > li {
+        display: none;
+        height: 100%;
+        width: 100%;
+        flex-direction: column;
+      }
+
+      #info-panel .panel li.active {
+        display: flex;
+      }
+
+      table {
+        border-spacing: 0;
+        width: 100%;
+        padding: 8px;
+        background-color: #ddd;
+        white-space: pre;
+      }
+
+      #tbl-events,
+      #tbl-logs {
+        font-family: monospace;
+      }
+
+      #tbl-logs th,
+      #tbl-logs td,
+      #tbl-events th,
+      #tbl-events td {
+        padding: 0 4px;
+        white-space: pre;
+      }
+
+      .color-west {
+        background: #edbdbd;
+      }
+
+      .color-east {
+        background: #fff2cc;
+      }
+
+      .color-south {
+        background: #ffe6cc;
+      }
+
+      .color-north {
+        background: #e1d5e7;
+      }
+
+      .color-center {
+        background: #d5e8d4;
+      }
+
+      #core-status {
+        font-family: monospace;
+        white-space: pre;
+      }
+    </style>
+    <script src="/ui/static/cytoscape.min.js"></script>
+  </head>
+  <body>
+    <div class="container">
+      <div class="col2 col-centered">
+        <div id="network"></div>
+      </div>
+      <div class="hspace-16"></div>
+      <div class="col2">
+        <div class="row node-details">
+          <h1>
+            <code>
+              [<span id="node-name">root</span>]<span id="device-details">
+                &gt; <span id="title-device">center</span></span
+              >
+            </code>
+          </h1>
+          <h4>Container ID: <code id="node-id">root</code></h4>
+        </div>
+        <div id="info-panel" class="col device-section">
+          <ul class="panel-selector">
+            <li data-content="status" class="active">
+              <button>Device Status</button>
+            </li>
+            <li data-content="events"><button>Events</button></li>
+            <li data-content="logs"><button>Logs</button></li>
+          </ul>
+          <ul class="panel">
+            <li data-content="status">
+              <section id="status-network">
+                <div class="container">
+                  <div id="status-wlan" class="col2">
+                    <h3>WLAN stats (<code class="name">wlan-tunnel</code>)</h3>
+                    <ul>
+                      <li>IP: <span class="ip">0.0.0.0</span></li>
+                      <li>Mask: <span class="mask">0.0.0.0</span></li>
+                      <li>Packets IN: <span class="packets-in">0</span></li>
+                      <li>Packets OUT: <span class="packets-out">0</span></li>
+                      <li>Bytes IN: <span class="bytes-in">0</span></li>
+                      <li>Bytes OUT: <span class="bytes-out">0</span></li>
+                    </ul>
+                  </div>
+                  <div id="status-spi" class="col2">
+                    <h3>SPI stats (<code class="name">spi-c</code>)</h3>
+                    <ul>
+                      <li>IP: <span class="ip">0.0.0.0</span></li>
+                      <li>Mask: <span class="mask">0.0.0.0</span></li>
+                      <li>Packets IN: <span class="packets-in">0</span></li>
+                      <li>Packets OUT: <span class="packets-out">0</span></li>
+                      <li>Bytes IN: <span class="bytes-in">0</span></li>
+                      <li>Bytes OUT: <span class="bytes-out">0</span></li>
+                    </ul>
+                  </div>
+                </div>
+              </section>
+              <hr />
+              <div class="row">
+                <section class="col2">
+                  <h3>Routing table</h3>
+                  <ul id="status-routing-table"></ul>
+                </section>
+                <section id="status-events" class="col2">
+                  <h3>
+                    Total events processed:
+                    <span id="total-events-processed">0</span>
+                  </h3>
+                  <h3>Pending events: <span id="pending-events">0</span></h3>
+                </section>
+              </div>
+              <section>
+                <h3>
+                  Wireless peer IP:
+                  <span id="status-peer-ip">-</span>
+                </h3>
+              </section>
+              <section id="core-status"></section>
+            </li>
+            <li data-content="events">
+              <table class="content">
+                <thead>
+                  <tr>
+                    <th style="width: 10%">Timestamp</th>
+                    <th style="width: 10%">Event</th>
+                    <th style="width: 80%">Metadata</th>
+                  </tr>
+                </thead>
+                <tbody id="tbl-events"></tbody>
+              </table>
+            </li>
+            <li id="logs-panel" data-content="logs">
+              <table class="content">
+                <thead>
+                  <tr>
+                    <th style="width: 10%">Timestamp</th>
+                    <th style="width: 10%">Source</th>
+                    <th style="width: 80%"></th>
+                  </tr>
+                </thead>
+                <tbody id="tbl-logs"></tbody>
+              </table>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <script>
+      const makePanel = (panelContainerId, refreshFn) => {
+        let currentPanel = null;
+        const $panelContainer = document.getElementById(panelContainerId);
+        const $selectors = $panelContainer.querySelectorAll(
+          ".panel-selector > li"
+        );
+        const $panels = $panelContainer.querySelectorAll(".panel > li");
+
+        const findByContent = ($nodes, content) => {
+          for (const $node of $nodes) {
+            if ($node.getAttribute("data-content") === content) {
+              return $node;
+            }
+          }
+
+          return null;
+        };
+
+        const switchActiveClass = ($nodes, targetContent) => {
+          for (const $node of $nodes) {
+            $node.classList.remove("active");
+            if ($node.getAttribute("data-content") === targetContent) {
+              $node.classList.add("active");
+            }
+          }
+        };
+
+        const setPanelContent = (targetContent, html) => {
+          findByContent($panels, targetContent).innerHTML = html;
+        };
+
+        const setActivePanel = (targetContent) => {
+          currentPanel = targetContent;
+          switchActiveClass($panels, targetContent);
+          switchActiveClass($selectors, targetContent);
+          refreshFn(targetContent, findByContent($panels, targetContent));
+        };
+
+        for (const $selector of $selectors) {
+          $selector.querySelector("button").onclick = () => {
+            setActivePanel($selector.getAttribute("data-content"));
+          };
+        }
+
+        const self = {
+          clearActive: () => {
+            currentPanel = null;
+            switchActiveClass($panels, null);
+            switchActiveClass($selectors, null);
+          },
+          currentPanel: () => currentPanel,
+          refresh: () => currentPanel && setActivePanel(currentPanel),
+          setActivePanel,
+        };
+
+        self.clearActive();
+        return self;
+      };
+    </script>
+    <script>
+      const $nodeName = document.getElementById("node-name");
+      const $containerId = document.getElementById("node-id");
+      const $deviceDetails = document.getElementById("device-details");
+      const $titleDevice = document.getElementById("title-device");
+
+      const setNodeInformation = (nodeName, containerId, selectedDevice) => {
+        $nodeName.textContent = nodeName;
+        $containerId.textContent = containerId;
+        if (!selectedDevice) {
+          $deviceDetails.style = "visibility: hidden";
+          $titleDevice.textContent = "";
+        } else {
+          $deviceDetails.style = "visibility: visible";
+          $titleDevice.textContent = selectedDevice;
+        }
+      };
+
+      const getCurrentDeviceOrientation = () => $titleDevice.textContent;
+      const getCurrentNodeContainerId = () => $containerId.textContent;
+    </script>
+    <script>
+      const ORIENTATIONS = ["n", "e", "s", "w", "c"];
+      const INTERNAL_LINKS = [
+        ["n", "e"],
+        ["e", "s"],
+        ["s", "w"],
+        ["w", "c"],
+        ["c", "n"],
+      ];
+
+      const getOrientationName = (orientation) => {
+        if (orientation === "n") {
+          return "north";
+        }
+        if (orientation === "e") {
+          return "east";
+        }
+        if (orientation === "s") {
+          return "south";
+        }
+        if (orientation === "w") {
+          return "west";
+        }
+        if (orientation === "c") {
+          return "center";
+        }
+
+        throw new Error(`Invalid device id: ${device}`);
+      };
+
+      const makeCyNode = (nodeId, node, parent, orientation) => {
+        const ret = {
+          data: {
+            id: nodeId,
+            name: nodeId,
+            node,
+          },
+          group: "nodes",
+          removed: false,
+          selected: false,
+          selectable: true,
+          locked: false,
+          grabbed: false,
+          grabbable: false,
+        };
+
+        if (parent) {
+          ret.data.parent = parent;
+        }
+
+        if (orientation) {
+          ret.data.orientation = orientation;
+        }
+
+        return ret;
+      };
+
+      const getCyData = (config) => {
+        const result = [];
+        for (const nodeId in config.nodes) {
+          const node = config.nodes[nodeId];
+          result.push(makeCyNode(nodeId, node));
+
+          // Add internal devices
+          for (const orientation of ORIENTATIONS) {
+            result.push(
+              makeCyNode(`${nodeId}.${orientation}`, node, nodeId, orientation)
+            );
+          }
+
+          // Add internal links
+          for (const link of INTERNAL_LINKS) {
+            result.push({
+              data: {
+                id: `${nodeId}.${link[0]}${link[1]}`,
+                source: `${nodeId}.${link[0]}`,
+                target: `${nodeId}.${link[1]}`,
+                nic: "spi",
+              },
+              group: "edges",
+            });
+          }
+        }
+
+        for (const src in config.externalLinks) {
+          const dst = config.externalLinks[src];
+
+          result.push({
+            data: {
+              id: `${src}-${dst}`,
+              source: src,
+              target: dst,
+              nic: "wlan",
+            },
+            group: "edges",
+          });
+        }
+
+        return result;
+      };
+
+      const getDevicePosition = (device) => {
+        if (device.endsWith(".n")) {
+          return { x: 0, y: -1 };
+        }
+        if (device.endsWith(".e")) {
+          return { x: 1, y: 0 };
+        }
+        if (device.endsWith(".s")) {
+          return { x: 0, y: 1 };
+        }
+        if (device.endsWith(".w")) {
+          return { x: -1, y: 0 };
+        }
+        if (device.endsWith(".c")) {
+          return { x: 0, y: 0 };
+        }
+
+        throw new Error(`Invalid device id: ${device}`);
+      };
+
+      const getNodePositions = (config) => {
+        const positions = {};
+
+        for (const nodeId in config.nodes) {
+          const node = config.nodes[nodeId];
+          const [x, y] = node.position;
+          positions[nodeId] = { x: x * 4 * 64, y: y * 4 * 64 };
+          for (const orientation of ["n", "e", "s", "w", "c"]) {
+            const currentDevice = `${nodeId}.${orientation}`;
+            const { x: dx, y: dy } = getDevicePosition(currentDevice);
+            positions[currentDevice] = {
+              x: (x * 4 + dx) * 64,
+              y: (y * 4 + dy) * 64,
+            };
+          }
+        }
+
+        return positions;
+      };
+
+      const cy_main = (nodeData) => {
+        var cy = (window.cy = cytoscape({
+          container: document.getElementById("network"),
+
+          layout: {
+            name: "preset",
+            positions: getNodePositions(nodeData),
+          },
+          wheelSensitivity: 0.25,
+
+          style: [
+            {
+              selector: "node",
+              style: {
+                width: "48px",
+                height: "48px",
+                content: "data(name)",
+                shape: "round-rectangle",
+                "corner-radius": "96px",
+                "font-size": "16px",
+                "text-valign": "center",
+                "text-halign": "center",
+                "background-color": "#555",
+                "text-outline-color": "#555",
+                "text-outline-width": "2px",
+                color: "#fff",
+                "overlay-padding": "6px",
+                "z-index": "10",
+                padding: "1px",
+              },
+            },
+            {
+              selector: "node > *",
+              style: {
+                width: "48px",
+                height: "48px",
+                content: "data(name)",
+                "font-size": "16px",
+                "text-valign": "center",
+                "text-halign": "center",
+                "background-color": "#888",
+                "text-outline-color": "#888",
+                "text-outline-width": "2px",
+                color: "#fff",
+                "border-width": "3px",
+                "border-color": "#888",
+                "z-index": "10",
+              },
+            },
+            {
+              selector: 'node[id="root"]',
+              style: {
+                width: "64px",
+                height: "64px",
+                content: "data(name)",
+                "font-size": "16px",
+                "text-valign": "center",
+                "text-halign": "center",
+                "background-color": "#222",
+                "text-outline-color": "#222",
+                "text-outline-width": "2px",
+                color: "#fff",
+                "overlay-padding": "6px",
+                "z-index": "10",
+              },
+            },
+            {
+              selector: "node:selected",
+              style: {
+                "border-width": "3px",
+                "border-color": "black",
+                "background-color": "#8bc34a",
+              },
+            },
+          ],
+
+          elements: getCyData(nodeData),
+        }));
+
+        cy.on("select", "node", (e) => {
+          const nodeData = cy.$("node:selected")[0].data();
+
+          if (nodeData.orientation) {
+            loadDeviceInformation(
+              nodeData.parent,
+              nodeData.node.containerId,
+              getOrientationName(nodeData.orientation)
+            );
+          } else {
+            loadDeviceInformation(
+              nodeData.name,
+              nodeData.node.containerId,
+              null
+            );
+          }
+        });
+      };
+    </script>
+    <script>
+      const devicePanel = makePanel(
+        "info-panel",
+        (requestedContent, $panel) => {
+          if (requestedContent == "status")
+            return fetchDeviceStatus(
+              getCurrentNodeContainerId(),
+              getCurrentDeviceOrientation(),
+              $panel
+            );
+          if (requestedContent == "events")
+            return fetchDeviceEvents(
+              getCurrentNodeContainerId(),
+              getCurrentDeviceOrientation(),
+              $panel
+            );
+          if (requestedContent == "logs")
+            return fetchDeviceLogs(
+              getCurrentNodeContainerId(),
+              getCurrentDeviceOrientation(),
+              $panel
+            );
+        }
+      );
+
+      const getFetchUrl = (targetContent) => {
+        const base = `/nodes/${getCurrentNodeContainerId()}`;
+      };
+
+      const fetchDeviceStatus = (nodeId, device, $panel) =>
+        fetch(
+          `/nodes/${getCurrentNodeContainerId()}/status/${getCurrentDeviceOrientation()}`
+        )
+          .then((data) => data.json())
+          .then((status) => {
+            if (!device) {
+              return; // TODO: node status
+            }
+
+            $panel.querySelector("#status-routing-table").innerHTML =
+              status.routing_table.map((e) => "<li>" + e + "</li>").join("");
+            $panel.querySelector("#total-events-processed").textContent =
+              status.events.totalEvents;
+            $panel.querySelector("#pending-events").textContent =
+              status.events.pendingEvents;
+            $panel.querySelector("#status-peer-ip").textContent =
+              status.peer_ip || "-";
+            $panel.querySelector("#core-status").textContent =
+              status.core || "";
+
+            for (const [type, nic] of [
+              ["spi", status.interfaces.spi],
+              ["wlan", status.interfaces.wlan],
+            ]) {
+              $nic = $panel.querySelector(`#status-${type}`);
+              $nic.querySelector(".name").textContent = nic.name;
+              $nic.querySelector(".ip").textContent = nic.ip;
+              $nic.querySelector(".mask").textContent = nic.mask;
+              $nic.querySelector(".packets-in").textContent = nic.packetsIn;
+              $nic.querySelector(".packets-out").textContent = nic.packetsOut;
+              $nic.querySelector(".bytes-in").textContent = nic.bytesIn;
+              $nic.querySelector(".bytes-out").textContent = nic.bytesOut;
+            }
+          });
+
+      const fetchDeviceLogs = (nodeId, device, $panel) =>
+        fetch(
+          `/nodes/${getCurrentNodeContainerId()}/events/${getCurrentDeviceOrientation()}?stream=logs`
+        )
+          .then((data) => data.json())
+          .then((data) => {
+            $panel.querySelector("tbody").innerHTML = data
+              .filter((ev) => !ev.data.event)
+              .map((ev) => {
+                const ts = new Date(ev.timestamp / 1e6);
+                return (
+                  `<tr class="color-${ev.source}">` +
+                  [
+                    ts.toLocaleTimeString() + "." + ts.getMilliseconds(),
+                    ev.source.toUpperCase(),
+                    ev.formatted,
+                  ]
+                    .map((value) => `<td>${value}</td>`)
+                    .join("") +
+                  `</tr>`
+                );
+              })
+              .join("");
+          })
+          .catch((err) => console.log("Could not retrieve data", err));
+
+      const fetchDeviceEvents = (nodeId, device, $panel) =>
+        fetch(
+          `/nodes/${getCurrentNodeContainerId()}/events/${getCurrentDeviceOrientation()}?stream=events`
+        )
+          .then((data) => data.json())
+          .then((data) => {
+            $panel.querySelector("tbody").innerHTML = data
+              .filter((ev) => !!ev.data.event)
+              .map((ev) => {
+                const ts = new Date(ev.timestamp / 1e6);
+                return (
+                  `<tr class="color-${ev.source}">` +
+                  [
+                    ts.toLocaleTimeString() + "." + ts.getMilliseconds(),
+                    (ev.data.cs ? " · " : "") + ev.data.event.toUpperCase(),
+                    ev.formatted,
+                  ]
+                    .map((value) => `<td>${value}</td>`)
+                    .join("") +
+                  "</tr>"
+                );
+              })
+              .join("");
+          })
+          .catch((err) => console.log("Could not retrieve data", err));
+
+      const loadDeviceInformation = (
+        nodeName,
+        containerId,
+        deviceOrientation
+      ) => {
+        setNodeInformation(nodeName, containerId, deviceOrientation);
+        if (!devicePanel.currentPanel()) {
+          devicePanel.setActivePanel("status");
+        } else {
+          devicePanel.refresh();
+        }
+      };
+
+      fetch("/nodes")
+        .then((data) => data.json())
+        .then(cy_main);
+    </script>
+  </body>
+</html>

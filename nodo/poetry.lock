@@ -18,7 +18,7 @@ structlog = ">=25.5.0,<26.0.0"
 type = "git"
 url = "https://github.com/sportelliluciano/pysim-sdk.git"
 reference = "HEAD"
-resolved_reference = "4f95dccebbc8ab83bb089cd709bed56f664ebdc4"
+resolved_reference = "535934564813af04a3ba2be22cc65c166ed56359"
 
 [[package]]
 name = "scapy"

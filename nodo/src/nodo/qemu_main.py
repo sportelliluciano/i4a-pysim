@@ -56,7 +56,7 @@ def root_main(spi_in, spi_out):
         spi_out,
         "c",
         node_id="root",
-        wlan_ctor=lambda sink: InternetTunnel(sink, "eth0", layer_2=True),
+        wlan_ctor=lambda sink: InternetTunnel(sink, "eth0", layer_2=True, mtu=1440),
     )
 
 

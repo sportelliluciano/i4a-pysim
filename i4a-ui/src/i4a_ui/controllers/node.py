@@ -42,3 +42,8 @@ def get_status(
     device: Annotated[str, Path(title="Device (north, east, south, west, center)")],
 ):
     return app.state.events_service.get_status(node_id, device)
+
+
+@app.post("/clear")
+def clear_events():
+    return requests.post(f"{app.state.pysim_url}/clear", json=[]).json()

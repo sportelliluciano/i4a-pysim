@@ -25,9 +25,9 @@ services:
     volumes:
       - ./nodo:/app:ro
       - pysim:/tmp/pysim
-      - ${QEMU_BUILD_PATH:-.}:/build # Cambiar por el path adecuado
+      - ${QEMU_BUILD_PATH:-.}:/build
     working_dir: /app/src
-    command: python -m nodo --root --qemu
+    command: python -m nodo --root ${I4A_EXTRA_NODE_ARGS:-}
     stop_signal: SIGINT
     cap_add:
       - NET_ADMIN
@@ -40,16 +40,16 @@ services:
     volumes:
       - ./nodo:/app:ro
       - pysim:/tmp/pysim
-      - ${QEMU_BUILD_PATH:-.}:/build # Cambiar por el path adecuado
+      - ${QEMU_BUILD_PATH:-.}:/build
     working_dir: /app/src
     network_mode: none
-    command: python -m nodo --qemu
+    command: python -m nodo ${I4A_EXTRA_NODE_ARGS:-}
     stop_signal: SIGINT
     cap_add:
       - NET_ADMIN
     deploy:
       mode: replicated
-      replicas: 2 # Cambiar por la cantidad de replicas necesaria
+      replicas: ${I4A_HOME_NODES_COUNT:-0}
     depends_on:
       - pysim
 

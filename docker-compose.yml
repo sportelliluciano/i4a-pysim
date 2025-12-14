@@ -25,7 +25,7 @@ services:
     volumes:
       - ./nodo:/app:ro
       - pysim:/tmp/pysim
-      - /home/lucho/user/fiuba/i4a/tests/full_integration/build:/build # Cambiar por el path adecuado
+      - ${QEMU_BUILD_PATH:-.}:/build # Cambiar por el path adecuado
     working_dir: /app/src
     command: python -m nodo --root --qemu
     stop_signal: SIGINT
@@ -40,7 +40,7 @@ services:
     volumes:
       - ./nodo:/app:ro
       - pysim:/tmp/pysim
-      - /home/lucho/user/fiuba/i4a/tests/full_integration/build:/build # Cambiar por el path adecuado
+      - ${QEMU_BUILD_PATH:-.}:/build # Cambiar por el path adecuado
     working_dir: /app/src
     network_mode: none
     command: python -m nodo --qemu

@@ -26,7 +26,8 @@ Para lanzar la simulación práctica:
   finalizar se inciará una instancia de gdb con el código cargado, la misma es útil para buscar
   símbolos en caso de que el emulador se reinicie por un problema en el código, pero si no se
   utiliza puede simplemente cerrarse.
-- Actualizar en el archivo compose las rutas a la carpeta `build` del código del proyecto, de
-  aquí se tomarán los archivos `qemu_flash.bin` y `qemu_efuse.bin` para utilizar en QEMU.
+- Setear la variable de entorno QEMU_BUILD_PATH con la ruta a la carpeta `build` del código del proyecto, de
+  aquí se tomarán los archivos `qemu_flash.bin` y `qemu_efuse.bin` para utilizar en QEMU. Por ejemplo,
+  `QEMU_BUILD_PATH=/home/luciano/i4a/tests/full_integration/build`.
 - Lanzar la simulación con `docker compose up`
 - Acceder a la UI en `localhost:8000`

@@ -1,6 +1,5 @@
 {
   "network": "basic",
-  "connect_order": {
-  },
+  "connect_order": [],
   "connect_delay": 5
 }
